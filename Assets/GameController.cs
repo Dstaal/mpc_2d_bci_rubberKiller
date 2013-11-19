@@ -5,11 +5,12 @@ using System.Collections.Generic;
 public class GameController : MonoBehaviour {
 
 	public List<GameObject> cops = new List<GameObject>();
-	public float gameTime = 0f, spawnFrequency = 60f;
+	public float gameTime = 0f, spawnFrequency = 60f, BlinksPerSecond = 2f;
 	private List<GameObject> spawnPoints;
 	private float lastSpawn = 0f;
 
 	private GameObject currentCop = null;
+	private bool blinking = false;
 
 	// Use this for initialization
 	void Start () {
@@ -28,7 +29,37 @@ public class GameController : MonoBehaviour {
 			if (currentCop == null) {
 				spawnCop();
 			}
+			//else {
+			//
+			//}
+			/*else {
+				currentCop.GetComponent<SpriteRenderer>().enabled = !currentCop.GetComponent<SpriteRenderer>().enabled;
+			}*/
 
+		}
+
+		if (currentCop != null) {
+			if (!blinking) {
+				StartCoroutine(Blink ());
+			}
+		}
+	}
+
+	IEnumerator Blink() {
+		if (!blinking) {
+			blinking = true;
+
+			Debug.Log ("BLINK ON " + currentCop);
+			float waitTime = 1f / BlinksPerSecond;
+			while (currentCop != null) {
+				Debug.Log ("BLINK");
+				currentCop.renderer.enabled = false;
+				yield return new WaitForSeconds (waitTime);
+				currentCop.renderer.enabled = true;
+				yield return new WaitForSeconds (waitTime);
+			}
+		} else {
+			Debug.Log("NOT BLINKING");
 		}
 	}
 
