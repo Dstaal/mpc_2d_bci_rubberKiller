@@ -45,7 +45,8 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
-	IEnumerator Blink() {
+	/* blinking cop
+	 IEnumerator Blink() {
 		if (!blinking) {
 			blinking = true;
 
@@ -56,6 +57,27 @@ public class GameController : MonoBehaviour {
 				currentCop.renderer.enabled = false;
 				yield return new WaitForSeconds (waitTime);
 				currentCop.renderer.enabled = true;
+				yield return new WaitForSeconds (waitTime);
+			}
+		} else {
+			Debug.Log("NOT BLINKING");
+		}
+	}
+	*/
+
+	// blinking silu
+
+	IEnumerator Blink() {
+		if (!blinking) {
+			blinking = true;
+			
+			Debug.Log ("BLINK ON " + currentCop);
+			float waitTime = 1f / BlinksPerSecond;
+			while (currentCop != null) {
+				Debug.Log ("BLINK");
+				currentCop.transform.GetChild(0).renderer.enabled = false;
+				yield return new WaitForSeconds (waitTime);
+				currentCop.transform.GetChild(0).renderer.enabled = true;
 				yield return new WaitForSeconds (waitTime);
 			}
 		} else {
