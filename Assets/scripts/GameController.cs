@@ -6,11 +6,13 @@ public class GameController : MonoBehaviour {
 
 	public List<GameObject> cops = new List<GameObject>();
 	public float gameTime = 0f, spawnFrequency = 60f, BlinksPerSecond = 2f;
+	public float killTime = 0;
 	private List<GameObject> spawnPoints;
 	private float lastSpawn = 0f;
 
 	private GameObject currentCop = null;
 	private bool blinking = false;
+	public float timeOverCop = 0f;
 
 	// Use this for initialization
 	void Start () {
@@ -29,12 +31,7 @@ public class GameController : MonoBehaviour {
 			if (currentCop == null) {
 				spawnCop();
 			}
-			//else {
-			//
-			//}
-			/*else {
-				currentCop.GetComponent<SpriteRenderer>().enabled = !currentCop.GetComponent<SpriteRenderer>().enabled;
-			}*/
+		
 
 		}
 
@@ -42,6 +39,7 @@ public class GameController : MonoBehaviour {
 			if (!blinking) {
 				StartCoroutine(Blink ());
 			}
+			killCop();
 		}
 	}
 
@@ -74,14 +72,16 @@ public class GameController : MonoBehaviour {
 			Debug.Log ("BLINK ON " + currentCop);
 			float waitTime = 1f / BlinksPerSecond;
 			while (currentCop != null) {
-				Debug.Log ("BLINK");
-				currentCop.transform.GetChild(0).renderer.enabled = false;
+				//Debug.Log ("BLINK");
+				if(currentCop!=null)
+					currentCop.transform.GetChild(0).renderer.enabled = false;
 				yield return new WaitForSeconds (waitTime);
-				currentCop.transform.GetChild(0).renderer.enabled = true;
+				if(currentCop!=null)
+					currentCop.transform.GetChild(0).renderer.enabled = true;
 				yield return new WaitForSeconds (waitTime);
 			}
 		} else {
-			Debug.Log("NOT BLINKING");
+			//Debug.Log("NOT BLINKING");
 		}
 	}
 
@@ -95,6 +95,28 @@ public class GameController : MonoBehaviour {
 		newCop.transform.localScale = spawnPoint.transform.localScale;
 
 		currentCop = newCop;
+
+	}
+
+	private void killCop(){
+		Vector2 mousePos = new Vector2 (Input.mousePosition.x, Screen.height - Input.mousePosition.y);
+		Ray aim = Camera.main.ScreenPointToRay (new Vector3 (mousePos.x, mousePos.y, 0));
+
+		if(currentCop.renderer.bounds.IntersectRay(aim)) 
+		{
+			timeOverCop+= Time.deltaTime;
+			if(timeOverCop > killTime)
+			{
+				Destroy(currentCop.gameObject);
+				blinking = false;
+				currentCop = null;
+				timeOverCop = 0f;
+			}
+		}
+		else 
+		{
+			timeOverCop = 0f;
+		}
 
 	}
 
